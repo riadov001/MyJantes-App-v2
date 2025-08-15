@@ -43,7 +43,7 @@ export default function Header() {
           <Link href="/" data-testid="logo-link">
             <div className="flex items-center">
               <img 
-                src="https://myjantes.fr/wp-content/uploads/2024/03/Sans-titre-1.webp" 
+                src="https://myjantes.fr/wp-content/uploads/2024/01/cropped-Logo-2-1-768x543.png" 
                 alt="My Jantes Logo" 
                 className="h-10 w-auto"
               />

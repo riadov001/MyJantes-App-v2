@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
-import { ArrowRight, Cog, Calendar, UserCheck, Clock, CalendarCheck, Shield } from "lucide-react";
+import { ArrowRight, Cog, Calendar, UserCheck, Clock, CalendarCheck, Shield, Phone, FileText } from "lucide-react";
 
 export default function Home() {
   const services = [
@@ -123,29 +123,191 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
-              <Card key={index} className="bg-gray-50 hover:shadow-xl transition-shadow">
-                <div className="relative">
-                  <img 
-                    src={service.image} 
-                    alt={`${service.name} de jantes`} 
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Rénovation */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src="https://myjantes.fr/wp-content/uploads/2024/01/repar-jantes.jpg"
+                  alt="Rénovation de jantes"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold text-brand-black mb-4">Rénovation</h3>
+                <p className="text-brand-gray mb-6 leading-relaxed">
+                  Offrez une nouvelle vie à vos jantes avec le service de rénovation exceptionnel de Myjantes. 
+                  Grâce à notre expertise de pointe, nous redonnons éclat et durabilité à vos jantes en aluminium, 
+                  assurant un résultat qui dépasse vos attentes. Confiez-nous vos jantes, et découvrez la différence 
+                  d'un service de rénovation de qualité.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/booking">
+                    <Button 
+                      className="bg-brand-red hover:bg-red-700 text-white w-full sm:w-auto"
+                      data-testid="renovation-booking"
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Réserver
+                    </Button>
+                  </Link>
+                  <Link href="/quote">
+                    <Button 
+                      variant="outline" 
+                      className="border-brand-red text-brand-red hover:bg-brand-red hover:text-white w-full sm:w-auto"
+                      data-testid="renovation-quote"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Devis
+                    </Button>
+                  </Link>
                 </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-brand-black mb-2">{service.name}</h3>
-                  <p className="text-brand-gray mb-4">{service.description}</p>
-                  <button 
-                    className="text-brand-red hover:text-red-700 font-medium flex items-center"
-                    data-testid={`service-${service.name.toLowerCase()}`}
-                  >
-                    En savoir plus
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </button>
-                </CardContent>
-              </Card>
-            ))}
+              </CardContent>
+            </Card>
+
+            {/* Personnalisation */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src="https://myjantes.fr/wp-content/uploads/2024/01/jantes-concaver-lexus-1024x675-1.jpg"
+                  alt="Personnalisation de jantes"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold text-brand-black mb-4">Personnalisation</h3>
+                <p className="text-brand-gray mb-6 leading-relaxed">
+                  Transformez vos jantes en des œuvres d'art uniques grâce à notre service de personnalisation exclusif 
+                  chez Myjantes. Que vous cherchiez un style audacieux, élégant ou personnalisé, notre équipe experte 
+                  réalise vos aspirations. Offrez à votre véhicule une touche distinctive avec notre service de 
+                  personnalisation de jantes, garantissant une esthétique incomparable.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/booking">
+                    <Button 
+                      className="bg-brand-red hover:bg-red-700 text-white w-full sm:w-auto"
+                      data-testid="personnalisation-booking"
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Réserver
+                    </Button>
+                  </Link>
+                  <Link href="/quote">
+                    <Button 
+                      variant="outline" 
+                      className="border-brand-red text-brand-red hover:bg-brand-red hover:text-white w-full sm:w-auto"
+                      data-testid="personnalisation-quote"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Devis
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dévoilage */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src="https://myjantes.fr/wp-content/uploads/2024/01/dvoilage-3.jpg"
+                  alt="Dévoilage de jantes"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold text-brand-black mb-4">Dévoilage</h3>
+                <p className="text-brand-gray mb-6 leading-relaxed">
+                  Redonnez à vos trajets une douceur inégalée avec notre service de dévoilage de jantes chez Myjantes. 
+                  Grâce à notre expertise précise, nous éliminons les imperfections et assurons un équilibre parfait 
+                  pour des déplacements en toute fluidité. Confiez-nous vos jantes pour une conduite sans secousses 
+                  et une expérience de conduite optimale. Optez pour la qualité et le confort avec notre service de dévoilage.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/booking">
+                    <Button 
+                      className="bg-brand-red hover:bg-red-700 text-white w-full sm:w-auto"
+                      data-testid="devoilage-booking"
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Réserver
+                    </Button>
+                  </Link>
+                  <Link href="/quote">
+                    <Button 
+                      variant="outline" 
+                      className="border-brand-red text-brand-red hover:bg-brand-red hover:text-white w-full sm:w-auto"
+                      data-testid="devoilage-quote"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Devis
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Décapage */}
+            <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src="https://myjantes.fr/wp-content/uploads/2024/01/jantes-intro-1024x675.jpg"
+                  alt="Décapage de jantes"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold text-brand-black mb-4">Décapage</h3>
+                <p className="text-brand-gray mb-6 leading-relaxed">
+                  Offrez une cure de jeunesse à vos jantes avec notre service de décapage chez Myjantes. 
+                  Notre équipe spécialisée utilise des techniques de décapage avancées pour éliminer efficacement 
+                  la saleté, la rouille et les revêtements anciens, révélant ainsi la beauté originelle de vos jantes. 
+                  Optez pour une esthétique rafraîchie et un nouveau départ pour vos jantes en aluminium.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/booking">
+                    <Button 
+                      className="bg-brand-red hover:bg-red-700 text-white w-full sm:w-auto"
+                      data-testid="decapage-booking"
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Réserver
+                    </Button>
+                  </Link>
+                  <Link href="/quote">
+                    <Button 
+                      variant="outline" 
+                      className="border-brand-red text-brand-red hover:bg-brand-red hover:text-white w-full sm:w-auto"
+                      data-testid="decapage-quote"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Devis
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Section demande particulière */}
+          <div className="mt-16 text-center">
+            <Card className="bg-gradient-to-r from-brand-red/5 to-brand-red/10 border-brand-red/20">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold text-brand-black mb-4">Une demande particulière ?</h3>
+                <p className="text-brand-gray mb-6 max-w-2xl mx-auto">
+                  Chez Myjantes, nous apportons une grande importance à la satisfaction client. 
+                  Nous sommes à votre disposition pour toute demande ou interrogation.
+                </p>
+                <Button 
+                  className="bg-brand-red hover:bg-red-700 text-white px-8 py-3 text-lg"
+                  onClick={() => window.location.href = "tel:0321408053"}
+                  data-testid="contact-phone"
+                >
+                  <Phone className="h-5 w-5 mr-2" />
+                  Nous contacter - 03.21.40.80.53
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

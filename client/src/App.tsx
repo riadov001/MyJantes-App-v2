@@ -11,6 +11,9 @@ import Booking from "./pages/booking";
 import Quote from "./pages/quote";
 import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
+import PrivacyPolicy from "./pages/legal/privacy";
+import TermsOfService from "./pages/legal/terms";
+import Warranty from "./pages/legal/warranty";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +24,9 @@ function Router() {
       <Route path="/quote" component={Quote} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/login" component={Login} />
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/terms" component={TermsOfService} />
+      <Route path="/warranty" component={Warranty} />
       <Route component={NotFound} />
     </Switch>
   );

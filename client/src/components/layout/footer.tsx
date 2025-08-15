@@ -1,4 +1,5 @@
 import { Facebook, Instagram, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Footer() {
   return (
@@ -7,7 +8,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-3 gap-8">
           <div>
             <img 
-              src="https://myjantes.fr/wp-content/uploads/2024/03/Sans-titre-1.webp" 
+              src="https://myjantes.fr/wp-content/uploads/2024/01/cropped-Logo-2-1-768x543.png" 
               alt="My Jantes Logo" 
               className="h-10 w-auto mb-4"
             />
@@ -76,8 +77,21 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-300 text-sm">&copy; 2024 My Jantes. Tous droits réservés.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-300 text-sm mb-4 md:mb-0">&copy; 2024 My Jantes. Tous droits réservés.</p>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <Link href="/privacy" className="text-gray-300 hover:text-brand-red transition-colors">
+                Politique de confidentialité
+              </Link>
+              <Link href="/terms" className="text-gray-300 hover:text-brand-red transition-colors">
+                Conditions générales
+              </Link>
+              <Link href="/warranty" className="text-gray-300 hover:text-brand-red transition-colors">
+                Garanties
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
