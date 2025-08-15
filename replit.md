@@ -2,7 +2,7 @@
 
 This is a French automotive services application called "MY JANTES" that specializes in aluminum wheel renovation and customization services. The application provides a complete business management system for wheel restoration services including online booking, quote requests, customer management, and service administration. It features a modern responsive web interface with PWA capabilities for mobile users.
 
-**Latest Update (15 août 2025):** Application enhanced with authentic My Jantes branding, professional typography using Roboto/Roboto Condensed fonts, complete legal compliance pages for Google validation, and a comprehensive Flutter migration script for native mobile development. Ready for WordPress backend integration on Hostinger.
+**Latest Update (15 août 2025):** ✅ TRANSFORMATION FLUTTER TERMINÉE - Application React entièrement convertie en application Flutter native multi-plateforme (iOS/Android/Web). Inclut tous les écrans, authentification, pages légales RGPD, thème authentique My Jantes, et backend WordPress prêt pour déploiement Hostinger. Structure complète dans flutter_app/ avec guide d'installation détaillé.
 
 # User Preferences
 
@@ -62,32 +62,35 @@ The application is structured around core business entities:
 
 # External Dependencies
 
-## Database Services
+## Flutter/Mobile Dependencies
+- **Flutter SDK 3.16+**: Cross-platform mobile development framework
+- **Dart SDK 3.0+**: Programming language for Flutter applications
+- **Google Fonts**: Roboto and Roboto Condensed typography integration
+- **Provider**: State management for Flutter applications
+- **GoRouter**: Declarative routing for navigation
+- **HTTP Package**: Network requests and API communication
+- **Image Picker**: Camera and gallery access for photo uploads
+- **Flutter Secure Storage**: Encrypted local data storage
+- **Cached Network Image**: Optimized image loading and caching
+
+## Backend/WordPress Dependencies
+- **WordPress 6.0+**: Content management system and API backend
+- **MySQL Database**: Hostinger database for WordPress
+- **Custom REST API**: Endpoint `/wp-json/myjantes/v1/` for mobile app
+- **SMTP Configuration**: Email notifications via Hostinger
+- **PHP 8.0+**: Server-side processing for WordPress functions
+
+## Original React Dependencies (Legacy)
 - **Neon Database**: Serverless PostgreSQL hosting with connection pooling
 - **Drizzle ORM**: Type-safe database toolkit with automatic migrations
-
-## Cloud Storage
-- **Google Cloud Storage**: Object storage with global CDN distribution
-- **Replit Sidecar**: Authentication proxy for Google Cloud services integration
-
-## Authentication & Security
-- **bcrypt**: Industry-standard password hashing library
-- **jsonwebtoken**: JWT token generation and verification
-- **Zod**: Runtime type validation for API inputs and forms
-
-## Frontend Libraries
 - **Radix UI**: Accessible component primitives for complex UI components
 - **TanStack Query**: Server state synchronization and caching
-- **Uppy**: Modular file upload library with rich UI components
-- **Wouter**: Minimalist routing library for React applications
-
-## Development Tools
 - **Vite**: Fast build tool with HMR and optimized production builds
 - **TypeScript**: Static type checking across the entire application
 - **Tailwind CSS**: Utility-first CSS framework for rapid styling
-- **ESBuild**: Fast JavaScript bundler for server-side code
 
-## Third-party Integrations
-- **Google Fonts**: Inter and other typography assets
-- **Unsplash**: Stock photography for service demonstrations and marketing content
-- **Replit Environment**: Development platform integration with specialized tooling
+## Deployment Platforms
+- **Google Play Store**: Android app distribution
+- **Apple App Store**: iOS app distribution  
+- **Hostinger**: WordPress backend hosting
+- **Web Hosting**: Flutter web version deployment
