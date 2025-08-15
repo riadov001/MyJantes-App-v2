@@ -14,6 +14,7 @@ import Login from "./pages/login";
 import PrivacyPolicy from "./pages/legal/privacy";
 import TermsOfService from "./pages/legal/terms";
 import Warranty from "./pages/legal/warranty";
+import MentionsLegales from "./pages/legal/mentions";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/privacy" component={PrivacyPolicy} />
       <Route path="/terms" component={TermsOfService} />
       <Route path="/warranty" component={Warranty} />
+      <Route path="/mentions" component={MentionsLegales} />
       <Route component={NotFound} />
     </Switch>
   );

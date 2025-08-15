@@ -68,7 +68,7 @@ export default function Home() {
         />
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 leading-tight tracking-tight">
             LES EXPERTS DE LA<br />
             <span className="text-brand-red">JANTE ALU</span>
           </h1>
@@ -116,7 +116,7 @@ export default function Home() {
       <section id="services" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-brand-black mb-4">Nos Services</h2>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-brand-black mb-4 tracking-tight">Nos Services</h2>
             <p className="text-xl text-brand-gray max-w-3xl mx-auto">
               Découvrez l'assurance d'une rénovation de jantes exceptionnelle. Notre expertise inégalée, 
               associée à une garantie complète, assure des résultats durables et un éclat durable pour votre véhicule.
@@ -134,7 +134,7 @@ export default function Home() {
                 />
               </div>
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold text-brand-black mb-4">Rénovation</h3>
+                <h3 className="text-2xl font-heading font-bold text-brand-black mb-4 tracking-tight">Rénovation</h3>
                 <p className="text-brand-gray mb-6 leading-relaxed">
                   Offrez une nouvelle vie à vos jantes avec le service de rénovation exceptionnel de Myjantes. 
                   Grâce à notre expertise de pointe, nous redonnons éclat et durabilité à vos jantes en aluminium, 
@@ -175,7 +175,7 @@ export default function Home() {
                 />
               </div>
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold text-brand-black mb-4">Personnalisation</h3>
+                <h3 className="text-2xl font-heading font-bold text-brand-black mb-4 tracking-tight">Personnalisation</h3>
                 <p className="text-brand-gray mb-6 leading-relaxed">
                   Transformez vos jantes en des œuvres d'art uniques grâce à notre service de personnalisation exclusif 
                   chez Myjantes. Que vous cherchiez un style audacieux, élégant ou personnalisé, notre équipe experte 
@@ -216,7 +216,7 @@ export default function Home() {
                 />
               </div>
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold text-brand-black mb-4">Dévoilage</h3>
+                <h3 className="text-2xl font-heading font-bold text-brand-black mb-4 tracking-tight">Dévoilage</h3>
                 <p className="text-brand-gray mb-6 leading-relaxed">
                   Redonnez à vos trajets une douceur inégalée avec notre service de dévoilage de jantes chez Myjantes. 
                   Grâce à notre expertise précise, nous éliminons les imperfections et assurons un équilibre parfait 
@@ -257,7 +257,7 @@ export default function Home() {
                 />
               </div>
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold text-brand-black mb-4">Décapage</h3>
+                <h3 className="text-2xl font-heading font-bold text-brand-black mb-4 tracking-tight">Décapage</h3>
                 <p className="text-brand-gray mb-6 leading-relaxed">
                   Offrez une cure de jeunesse à vos jantes avec notre service de décapage chez Myjantes. 
                   Notre équipe spécialisée utilise des techniques de décapage avancées pour éliminer efficacement 
@@ -293,7 +293,7 @@ export default function Home() {
           <div className="mt-16 text-center">
             <Card className="bg-gradient-to-r from-brand-red/5 to-brand-red/10 border-brand-red/20">
               <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-brand-black mb-4">Une demande particulière ?</h3>
+                <h3 className="text-2xl font-heading font-bold text-brand-black mb-4 tracking-tight">Une demande particulière ?</h3>
                 <p className="text-brand-gray mb-6 max-w-2xl mx-auto">
                   Chez Myjantes, nous apportons une grande importance à la satisfaction client. 
                   Nous sommes à votre disposition pour toute demande ou interrogation.

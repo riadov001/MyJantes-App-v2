@@ -79,6 +79,8 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
   createdAt: true,
   status: true,
+}).extend({
+  date: z.string().transform((str) => new Date(str)),
 });
 
 export const insertQuoteSchema = createInsertSchema(quotes).omit({

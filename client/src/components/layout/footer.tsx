@@ -34,7 +34,7 @@ export default function Footer() {
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
+            <h3 className="text-lg font-heading font-semibold mb-4 tracking-tight">Contact</h3>
             <div className="space-y-3 text-gray-300">
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 text-brand-red mr-3 flex-shrink-0" />
@@ -56,7 +56,7 @@ export default function Footer() {
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <h3 className="text-lg font-heading font-semibold mb-4 tracking-tight flex items-center">
               <Clock className="h-4 w-4 mr-2" />
               Horaires
             </h3>
@@ -81,6 +81,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-sm mb-4 md:mb-0">&copy; 2024 My Jantes. Tous droits réservés.</p>
             <div className="flex flex-wrap gap-4 text-sm">
+              <Link href="/mentions" className="text-gray-300 hover:text-brand-red transition-colors">
+                Mentions légales
+              </Link>
               <Link href="/privacy" className="text-gray-300 hover:text-brand-red transition-colors">
                 Politique de confidentialité
               </Link>

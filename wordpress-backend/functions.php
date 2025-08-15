@@ -1,449 +1,406 @@
 <?php
 /**
- * My Jantes WordPress Backend
- * Fonctions personnalisées pour l'API REST
+ * Functions.php pour MY JANTES WordPress Theme
+ * API REST personnalisée pour l'application Flutter/React
  */
 
-// Activation du support CORS pour les requêtes API
-add_action('rest_api_init', function() {
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    add_filter('rest_pre_serve_request', function($value) {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
-        header('Access-Control-Allow-Credentials: true');
-        return $value;
-    });
-});
+// Activer les fonctionnalités du thème
+function myjantes_theme_support() {
+    add_theme_support('post-thumbnails');
+    add_theme_support('title-tag');
+    add_theme_support('custom-logo');
+    add_theme_support('html5', array('search-form', 'comment-form', 'comment-list'));
+}
+add_action('after_setup_theme', 'myjantes_theme_support');
 
-// Support des champs personnalisés pour l'API
-add_action('rest_api_init', 'register_custom_api_fields');
+// Créer les tables personnalisées lors de l'activation
+function myjantes_create_tables() {
+    global $wpdb;
+    
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    // Table des services
+    $table_services = $wpdb->prefix . 'myjantes_services';
+    $sql_services = "CREATE TABLE $table_services (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        name varchar(255) NOT NULL,
+        description text NOT NULL,
+        price decimal(10,2) NOT NULL,
+        duration int(11) NOT NULL,
+        image_url varchar(500),
+        is_active boolean DEFAULT true,
+        created_at datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+    
+    // Table des réservations
+    $table_bookings = $wpdb->prefix . 'myjantes_bookings';
+    $sql_bookings = "CREATE TABLE $table_bookings (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        service_id mediumint(9) NOT NULL,
+        booking_date date NOT NULL,
+        time_slot varchar(10) NOT NULL,
+        wheel_count int(11) NOT NULL,
+        vehicle_brand varchar(100) NOT NULL,
+        vehicle_model varchar(100) NOT NULL,
+        vehicle_year varchar(4) NOT NULL,
+        customer_name varchar(255) NOT NULL,
+        customer_email varchar(255) NOT NULL,
+        customer_phone varchar(20) NOT NULL,
+        customer_postal_code varchar(10) NOT NULL,
+        comments text,
+        status varchar(20) DEFAULT 'pending',
+        created_at datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        FOREIGN KEY (service_id) REFERENCES $table_services(id)
+    ) $charset_collate;";
+    
+    // Table des devis
+    $table_quotes = $wpdb->prefix . 'myjantes_quotes';
+    $sql_quotes = "CREATE TABLE $table_quotes (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        services text NOT NULL,
+        wheel_condition text NOT NULL,
+        vehicle_brand varchar(100) NOT NULL,
+        vehicle_model varchar(100) NOT NULL,
+        vehicle_year varchar(4) NOT NULL,
+        wheel_size varchar(50) NOT NULL,
+        customer_name varchar(255) NOT NULL,
+        customer_email varchar(255) NOT NULL,
+        customer_phone varchar(20) NOT NULL,
+        customer_postal_code varchar(10) NOT NULL,
+        image_urls text,
+        amount decimal(10,2),
+        status varchar(20) DEFAULT 'pending',
+        created_at datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+    
+    // Table des factures
+    $table_invoices = $wpdb->prefix . 'myjantes_invoices';
+    $sql_invoices = "CREATE TABLE $table_invoices (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        quote_id mediumint(9),
+        invoice_number varchar(50) UNIQUE NOT NULL,
+        amount decimal(10,2) NOT NULL,
+        status varchar(20) DEFAULT 'unpaid',
+        issued_at datetime DEFAULT CURRENT_TIMESTAMP,
+        paid_at datetime,
+        PRIMARY KEY (id),
+        FOREIGN KEY (quote_id) REFERENCES $table_quotes(id)
+    ) $charset_collate;";
+    
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql_services);
+    dbDelta($sql_bookings);
+    dbDelta($sql_quotes);
+    dbDelta($sql_invoices);
+    
+    // Insérer les services par défaut
+    $default_services = [
+        [
+            'name' => 'Rénovation',
+            'description' => 'Remise à neuf complète de vos jantes en aluminium',
+            'price' => 80.00,
+            'duration' => 120,
+            'image_url' => 'https://myjantes.fr/wp-content/uploads/2024/01/repar-jantes.jpg'
+        ],
+        [
+            'name' => 'Personnalisation',
+            'description' => 'Customisation de vos jantes selon vos goûts',
+            'price' => 120.00,
+            'duration' => 180,
+            'image_url' => 'https://myjantes.fr/wp-content/uploads/2024/01/jantes-concaver-lexus-1024x675-1.jpg'
+        ],
+        [
+            'name' => 'Dévoilage',
+            'description' => 'Correction des déformations de vos jantes',
+            'price' => 60.00,
+            'duration' => 90,
+            'image_url' => 'https://myjantes.fr/wp-content/uploads/2024/01/devoilage-jante.jpg'
+        ],
+        [
+            'name' => 'Décapage',
+            'description' => 'Nettoyage en profondeur de vos jantes',
+            'price' => 50.00,
+            'duration' => 60,
+            'image_url' => 'https://myjantes.fr/wp-content/uploads/2024/01/decapage-jante.jpg'
+        ]
+    ];
+    
+    foreach ($default_services as $service) {
+        $wpdb->insert($table_services, $service);
+    }
+}
+register_activation_hook(__FILE__, 'myjantes_create_tables');
 
-function register_custom_api_fields() {
-    // Enregistrement des endpoints personnalisés
-    register_rest_route('myjantes/v1', '/auth/register', array(
-        'methods' => 'POST',
-        'callback' => 'handle_user_registration',
-        'permission_callback' => '__return_true'
-    ));
-
-    register_rest_route('myjantes/v1', '/auth/login', array(
-        'methods' => 'POST',
-        'callback' => 'handle_user_login',
-        'permission_callback' => '__return_true'
-    ));
-
-    register_rest_route('myjantes/v1', '/bookings', array(
-        'methods' => 'GET',
-        'callback' => 'get_user_bookings',
-        'permission_callback' => 'is_user_logged_in'
-    ));
-
-    register_rest_route('myjantes/v1', '/bookings', array(
-        'methods' => 'POST',
-        'callback' => 'create_booking',
-        'permission_callback' => 'is_user_logged_in'
-    ));
-
-    register_rest_route('myjantes/v1', '/quotes', array(
-        'methods' => 'GET',
-        'callback' => 'get_user_quotes',
-        'permission_callback' => 'is_user_logged_in'
-    ));
-
-    register_rest_route('myjantes/v1', '/quotes', array(
-        'methods' => 'POST',
-        'callback' => 'create_quote',
-        'permission_callback' => 'is_user_logged_in'
-    ));
-
-    register_rest_route('myjantes/v1', '/invoices', array(
-        'methods' => 'GET',
-        'callback' => 'get_user_invoices',
-        'permission_callback' => 'is_user_logged_in'
-    ));
-
+// API REST personnalisée pour les services
+add_action('rest_api_init', function () {
+    // Endpoint pour les services
     register_rest_route('myjantes/v1', '/services', array(
         'methods' => 'GET',
-        'callback' => 'get_services',
+        'callback' => 'myjantes_get_services',
         'permission_callback' => '__return_true'
     ));
+    
+    // Endpoint pour les réservations
+    register_rest_route('myjantes/v1', '/bookings', array(
+        'methods' => 'POST',
+        'callback' => 'myjantes_create_booking',
+        'permission_callback' => '__return_true'
+    ));
+    
+    register_rest_route('myjantes/v1', '/bookings', array(
+        'methods' => 'GET',
+        'callback' => 'myjantes_get_bookings',
+        'permission_callback' => 'myjantes_admin_permission'
+    ));
+    
+    // Endpoint pour les devis
+    register_rest_route('myjantes/v1', '/quotes', array(
+        'methods' => 'POST',
+        'callback' => 'myjantes_create_quote',
+        'permission_callback' => '__return_true'
+    ));
+    
+    register_rest_route('myjantes/v1', '/quotes', array(
+        'methods' => 'GET',
+        'callback' => 'myjantes_get_quotes',
+        'permission_callback' => 'myjantes_admin_permission'
+    ));
+    
+    // Endpoint pour l'authentification admin
+    register_rest_route('myjantes/v1', '/auth', array(
+        'methods' => 'POST',
+        'callback' => 'myjantes_auth_admin',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+// Fonctions de l'API
+function myjantes_get_services($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'myjantes_services';
+    
+    $services = $wpdb->get_results("SELECT * FROM $table_name WHERE is_active = 1");
+    
+    return rest_ensure_response($services);
 }
 
-// Gestion de l'inscription
-function handle_user_registration($request) {
+function myjantes_create_booking($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'myjantes_bookings';
+    
     $params = $request->get_json_params();
     
-    $username = sanitize_user($params['email']);
-    $email = sanitize_email($params['email']);
-    $password = $params['password'];
-    $name = sanitize_text_field($params['name']);
+    // Validation des données
+    $required_fields = ['serviceId', 'date', 'timeSlot', 'wheelCount', 'vehicleBrand', 'vehicleModel', 'vehicleYear', 'customerName', 'customerEmail', 'customerPhone', 'customerPostalCode'];
     
-    if (username_exists($username) || email_exists($email)) {
-        return new WP_Error('user_exists', 'Cet utilisateur existe déjà', array('status' => 400));
+    foreach ($required_fields as $field) {
+        if (empty($params[$field])) {
+            return new WP_Error('missing_field', "Le champ $field est requis", array('status' => 400));
+        }
     }
     
-    $user_id = wp_create_user($username, $password, $email);
-    
-    if (is_wp_error($user_id)) {
-        return $user_id;
-    }
-    
-    wp_update_user(array(
-        'ID' => $user_id,
-        'display_name' => $name,
-        'first_name' => $name
+    // Vérifier la disponibilité du créneau
+    $existing = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_name WHERE booking_date = %s AND time_slot = %s AND status != 'cancelled'",
+        $params['date'],
+        $params['timeSlot']
     ));
     
-    // Générer un token JWT
-    $token = wp_generate_auth_cookie($user_id, time() + (7 * 24 * 60 * 60));
-    
-    return array(
-        'user' => array(
-            'id' => $user_id,
-            'name' => $name,
-            'email' => $email
-        ),
-        'token' => $token
-    );
-}
-
-// Gestion de la connexion
-function handle_user_login($request) {
-    $params = $request->get_json_params();
-    
-    $email = sanitize_email($params['email']);
-    $password = $params['password'];
-    
-    $user = wp_authenticate($email, $password);
-    
-    if (is_wp_error($user)) {
-        return new WP_Error('invalid_credentials', 'Identifiants invalides', array('status' => 401));
+    if ($existing > 0) {
+        return new WP_Error('slot_taken', 'Ce créneau est déjà réservé', array('status' => 409));
     }
     
-    $token = wp_generate_auth_cookie($user->ID, time() + (7 * 24 * 60 * 60));
-    
-    return array(
-        'user' => array(
-            'id' => $user->ID,
-            'name' => $user->display_name,
-            'email' => $user->user_email
-        ),
-        'token' => $token
-    );
-}
-
-// Récupérer les réservations de l'utilisateur
-function get_user_bookings($request) {
-    $user_id = get_current_user_id();
-    
-    $bookings = get_posts(array(
-        'post_type' => 'booking',
-        'meta_query' => array(
-            array(
-                'key' => 'user_id',
-                'value' => $user_id
-            )
-        ),
-        'posts_per_page' => -1
-    ));
-    
-    $result = array();
-    foreach ($bookings as $booking) {
-        $meta = get_post_meta($booking->ID);
-        $result[] = array(
-            'id' => $booking->ID,
-            'date' => $meta['booking_date'][0],
-            'time_slot' => $meta['time_slot'][0],
-            'service' => $meta['service'][0],
-            'status' => $meta['status'][0] ?: 'pending',
-            'vehicle_brand' => $meta['vehicle_brand'][0],
-            'vehicle_model' => $meta['vehicle_model'][0],
-            'created_at' => $booking->post_date
-        );
-    }
-    
-    return $result;
-}
-
-// Créer une réservation
-function create_booking($request) {
-    $user_id = get_current_user_id();
-    $params = $request->get_json_params();
-    
-    $booking_id = wp_insert_post(array(
-        'post_type' => 'booking',
-        'post_title' => 'Réservation - ' . $params['customer_name'],
-        'post_status' => 'publish',
-        'post_author' => $user_id
-    ));
-    
-    if ($booking_id) {
-        update_post_meta($booking_id, 'user_id', $user_id);
-        update_post_meta($booking_id, 'booking_date', $params['date']);
-        update_post_meta($booking_id, 'time_slot', $params['time_slot']);
-        update_post_meta($booking_id, 'service', $params['service_id']);
-        update_post_meta($booking_id, 'vehicle_brand', $params['vehicle_brand']);
-        update_post_meta($booking_id, 'vehicle_model', $params['vehicle_model']);
-        update_post_meta($booking_id, 'vehicle_year', $params['vehicle_year']);
-        update_post_meta($booking_id, 'wheel_count', $params['wheel_count']);
-        update_post_meta($booking_id, 'customer_name', $params['customer_name']);
-        update_post_meta($booking_id, 'customer_email', $params['customer_email']);
-        update_post_meta($booking_id, 'customer_phone', $params['customer_phone']);
-        update_post_meta($booking_id, 'customer_postal_code', $params['customer_postal_code']);
-        update_post_meta($booking_id, 'comments', $params['comments']);
-        update_post_meta($booking_id, 'status', 'pending');
-        
-        // Envoyer email de confirmation
-        send_booking_confirmation_email($booking_id, $params);
-        
-        return array('id' => $booking_id, 'status' => 'success');
-    }
-    
-    return new WP_Error('booking_failed', 'Erreur lors de la création de la réservation', array('status' => 500));
-}
-
-// Créer un devis
-function create_quote($request) {
-    $user_id = get_current_user_id();
-    $params = $request->get_json_params();
-    
-    $quote_id = wp_insert_post(array(
-        'post_type' => 'quote',
-        'post_title' => 'Devis - ' . $params['customer_name'],
-        'post_status' => 'publish',
-        'post_author' => $user_id
-    ));
-    
-    if ($quote_id) {
-        update_post_meta($quote_id, 'user_id', $user_id);
-        update_post_meta($quote_id, 'services', serialize($params['services']));
-        update_post_meta($quote_id, 'wheel_condition', $params['wheel_condition']);
-        update_post_meta($quote_id, 'vehicle_brand', $params['vehicle_brand']);
-        update_post_meta($quote_id, 'vehicle_model', $params['vehicle_model']);
-        update_post_meta($quote_id, 'vehicle_year', $params['vehicle_year']);
-        update_post_meta($quote_id, 'wheel_size', $params['wheel_size']);
-        update_post_meta($quote_id, 'customer_name', $params['customer_name']);
-        update_post_meta($quote_id, 'customer_email', $params['customer_email']);
-        update_post_meta($quote_id, 'customer_phone', $params['customer_phone']);
-        update_post_meta($quote_id, 'customer_postal_code', $params['customer_postal_code']);
-        update_post_meta($quote_id, 'image_urls', serialize($params['image_urls']));
-        update_post_meta($quote_id, 'status', 'pending');
-        
-        return array('id' => $quote_id, 'status' => 'success');
-    }
-    
-    return new WP_Error('quote_failed', 'Erreur lors de la création du devis', array('status' => 500));
-}
-
-// Récupérer les factures
-function get_user_invoices($request) {
-    $user_id = get_current_user_id();
-    
-    $invoices = get_posts(array(
-        'post_type' => 'invoice',
-        'meta_query' => array(
-            array(
-                'key' => 'user_id',
-                'value' => $user_id
-            )
-        ),
-        'posts_per_page' => -1
-    ));
-    
-    $result = array();
-    foreach ($invoices as $invoice) {
-        $meta = get_post_meta($invoice->ID);
-        $result[] = array(
-            'id' => $invoice->ID,
-            'invoice_number' => $meta['invoice_number'][0],
-            'amount' => $meta['amount'][0],
-            'status' => $meta['status'][0] ?: 'unpaid',
-            'issued_at' => $invoice->post_date,
-            'paid_at' => $meta['paid_at'][0]
-        );
-    }
-    
-    return $result;
-}
-
-// Récupérer les services
-function get_services($request) {
-    return array(
+    $result = $wpdb->insert(
+        $table_name,
         array(
-            'id' => 'renovation',
-            'name' => 'Rénovation',
-            'description' => 'Offrez une nouvelle vie à vos jantes avec le service de rénovation exceptionnel de Myjantes.',
-            'base_price' => '80.00'
-        ),
-        array(
-            'id' => 'personnalisation',
-            'name' => 'Personnalisation',
-            'description' => 'Transformez vos jantes en des œuvres d\'art uniques grâce à notre service de personnalisation exclusif.',
-            'base_price' => '120.00'
-        ),
-        array(
-            'id' => 'devoilage',
-            'name' => 'Dévoilage',
-            'description' => 'Redonnez à vos trajets une douceur inégalée avec notre service de dévoilage de jantes.',
-            'base_price' => '80.00'
-        ),
-        array(
-            'id' => 'decapage',
-            'name' => 'Décapage',
-            'description' => 'Offrez une cure de jeunesse à vos jantes avec notre service de décapage.',
-            'base_price' => '60.00'
+            'service_id' => $params['serviceId'],
+            'booking_date' => $params['date'],
+            'time_slot' => $params['timeSlot'],
+            'wheel_count' => $params['wheelCount'],
+            'vehicle_brand' => $params['vehicleBrand'],
+            'vehicle_model' => $params['vehicleModel'],
+            'vehicle_year' => $params['vehicleYear'],
+            'customer_name' => $params['customerName'],
+            'customer_email' => $params['customerEmail'],
+            'customer_phone' => $params['customerPhone'],
+            'customer_postal_code' => $params['customerPostalCode'],
+            'comments' => $params['comments'] ?? '',
+            'status' => 'pending'
         )
     );
+    
+    if ($result === false) {
+        return new WP_Error('db_error', 'Erreur lors de la création de la réservation', array('status' => 500));
+    }
+    
+    // Envoyer email de confirmation
+    myjantes_send_booking_confirmation($wpdb->insert_id, $params);
+    
+    return rest_ensure_response(array(
+        'success' => true,
+        'booking_id' => $wpdb->insert_id,
+        'message' => 'Réservation créée avec succès'
+    ));
 }
 
-// Types de contenus personnalisés
-add_action('init', 'register_custom_post_types');
+function myjantes_create_quote($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'myjantes_quotes';
+    
+    $params = $request->get_json_params();
+    
+    $result = $wpdb->insert(
+        $table_name,
+        array(
+            'services' => json_encode($params['services']),
+            'wheel_condition' => $params['wheelCondition'],
+            'vehicle_brand' => $params['vehicleBrand'],
+            'vehicle_model' => $params['vehicleModel'],
+            'vehicle_year' => $params['vehicleYear'],
+            'wheel_size' => $params['wheelSize'],
+            'customer_name' => $params['customerName'],
+            'customer_email' => $params['customerEmail'],
+            'customer_phone' => $params['customerPhone'],
+            'customer_postal_code' => $params['customerPostalCode'],
+            'image_urls' => json_encode($params['imageUrls'] ?? []),
+            'status' => 'pending'
+        )
+    );
+    
+    if ($result === false) {
+        return new WP_Error('db_error', 'Erreur lors de la création du devis', array('status' => 500));
+    }
+    
+    // Envoyer email de notification
+    myjantes_send_quote_notification($wpdb->insert_id, $params);
+    
+    return rest_ensure_response(array(
+        'success' => true,
+        'quote_id' => $wpdb->insert_id,
+        'message' => 'Demande de devis envoyée avec succès'
+    ));
+}
 
-function register_custom_post_types() {
-    // Réservations
-    register_post_type('booking', array(
-        'labels' => array(
-            'name' => 'Réservations',
-            'singular_name' => 'Réservation'
-        ),
-        'public' => false,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'capability_type' => 'post',
-        'supports' => array('title', 'editor'),
-        'show_in_rest' => true
-    ));
+function myjantes_get_bookings($request) {
+    global $wpdb;
+    $table_bookings = $wpdb->prefix . 'myjantes_bookings';
+    $table_services = $wpdb->prefix . 'myjantes_services';
     
-    // Devis
-    register_post_type('quote', array(
-        'labels' => array(
-            'name' => 'Devis',
-            'singular_name' => 'Devis'
-        ),
-        'public' => false,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'capability_type' => 'post',
-        'supports' => array('title', 'editor'),
-        'show_in_rest' => true
-    ));
+    $bookings = $wpdb->get_results("
+        SELECT b.*, s.name as service_name, s.price as service_price 
+        FROM $table_bookings b 
+        LEFT JOIN $table_services s ON b.service_id = s.id 
+        ORDER BY b.booking_date DESC, b.time_slot ASC
+    ");
     
-    // Factures
-    register_post_type('invoice', array(
-        'labels' => array(
-            'name' => 'Factures',
-            'singular_name' => 'Facture'
-        ),
-        'public' => false,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'capability_type' => 'post',
-        'supports' => array('title', 'editor'),
-        'show_in_rest' => true
-    ));
+    return rest_ensure_response($bookings);
+}
+
+function myjantes_get_quotes($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'myjantes_quotes';
+    
+    $quotes = $wpdb->get_results("SELECT * FROM $table_name ORDER BY created_at DESC");
+    
+    // Décoder les JSON
+    foreach ($quotes as &$quote) {
+        $quote->services = json_decode($quote->services);
+        $quote->image_urls = json_decode($quote->image_urls);
+    }
+    
+    return rest_ensure_response($quotes);
 }
 
 // Fonctions d'email
-function send_booking_confirmation_email($booking_id, $booking_data) {
-    $to = $booking_data['customer_email'];
-    $subject = 'Confirmation de réservation - My Jantes';
-    $message = "Bonjour " . $booking_data['customer_name'] . ",\n\n";
-    $message .= "Votre réservation a été confirmée.\n";
-    $message .= "Date: " . $booking_data['date'] . "\n";
-    $message .= "Créneau: " . $booking_data['time_slot'] . "\n\n";
-    $message .= "Nous vous contacterons prochainement pour confirmer les détails.\n\n";
-    $message .= "Cordialement,\nL'équipe My Jantes";
+function myjantes_send_booking_confirmation($booking_id, $booking_data) {
+    $subject = 'Confirmation de réservation - MY JANTES';
+    $message = "
+    Bonjour {$booking_data['customerName']},
     
-    wp_mail($to, $subject, $message);
+    Votre réservation a été confirmée :
+    - Date : {$booking_data['date']}
+    - Créneau : {$booking_data['timeSlot']}
+    - Véhicule : {$booking_data['vehicleBrand']} {$booking_data['vehicleModel']} ({$booking_data['vehicleYear']})
+    - Nombre de jantes : {$booking_data['wheelCount']}
+    
+    Nous vous contacterons prochainement pour confirmer votre rendez-vous.
+    
+    Cordialement,
+    L'équipe MY JANTES
+    03.21.40.80.53
+    ";
+    
+    wp_mail($booking_data['customerEmail'], $subject, $message);
+    
+    // Email admin
+    $admin_subject = 'Nouvelle réservation - MY JANTES';
+    $admin_message = "Nouvelle réservation reçue :\n\n" . print_r($booking_data, true);
+    wp_mail('contact@myjantes.fr', $admin_subject, $admin_message);
 }
 
-// Dashboard admin personnalisé
-add_action('admin_menu', 'add_myjantes_admin_menu');
+function myjantes_send_quote_notification($quote_id, $quote_data) {
+    $subject = 'Demande de devis reçue - MY JANTES';
+    $message = "
+    Bonjour {$quote_data['customerName']},
+    
+    Nous avons bien reçu votre demande de devis.
+    Notre équipe l'étudiera et vous contactera dans les plus brefs délais.
+    
+    Cordialement,
+    L'équipe MY JANTES
+    03.21.40.80.53
+    ";
+    
+    wp_mail($quote_data['customerEmail'], $subject, $message);
+    
+    // Email admin
+    $admin_subject = 'Nouvelle demande de devis - MY JANTES';
+    $admin_message = "Nouvelle demande de devis :\n\n" . print_r($quote_data, true);
+    wp_mail('contact@myjantes.fr', $admin_subject, $admin_message);
+}
 
-function add_myjantes_admin_menu() {
-    add_menu_page(
-        'My Jantes Dashboard',
-        'My Jantes',
-        'manage_options',
-        'myjantes-dashboard',
-        'myjantes_dashboard_page',
-        'dashicons-admin-tools',
-        30
+// Permissions admin
+function myjantes_admin_permission($request) {
+    return current_user_can('manage_options');
+}
+
+function myjantes_auth_admin($request) {
+    $params = $request->get_json_params();
+    $user = wp_authenticate($params['username'], $params['password']);
+    
+    if (is_wp_error($user)) {
+        return new WP_Error('auth_failed', 'Authentification échouée', array('status' => 401));
+    }
+    
+    if (!user_can($user, 'manage_options')) {
+        return new WP_Error('insufficient_permissions', 'Permissions insuffisantes', array('status' => 403));
+    }
+    
+    wp_set_current_user($user->ID);
+    wp_set_auth_cookie($user->ID);
+    
+    return rest_ensure_response(array(
+        'success' => true,
+        'user' => array(
+            'id' => $user->ID,
+            'username' => $user->user_login,
+            'email' => $user->user_email,
+            'role' => 'admin'
+        )
+    ));
+}
+
+// Configuration SMTP
+function myjantes_smtp_config() {
+    return array(
+        'host' => SMTP_HOST,
+        'port' => SMTP_PORT,
+        'username' => SMTP_USER,
+        'password' => SMTP_PASS,
+        'secure' => 'tls'
     );
 }
-
-function myjantes_dashboard_page() {
-    if (isset($_POST['approve_booking'])) {
-        $booking_id = intval($_POST['booking_id']);
-        update_post_meta($booking_id, 'status', 'confirmed');
-        echo '<div class="notice notice-success"><p>Réservation approuvée!</p></div>';
-    }
-    
-    if (isset($_POST['send_quote'])) {
-        $quote_id = intval($_POST['quote_id']);
-        $amount = sanitize_text_field($_POST['amount']);
-        update_post_meta($quote_id, 'amount', $amount);
-        update_post_meta($quote_id, 'status', 'sent');
-        echo '<div class="notice notice-success"><p>Devis envoyé!</p></div>';
-    }
-    
-    echo '<div class="wrap">';
-    echo '<h1>Dashboard My Jantes</h1>';
-    
-    // Afficher les réservations en attente
-    $pending_bookings = get_posts(array(
-        'post_type' => 'booking',
-        'meta_query' => array(
-            array(
-                'key' => 'status',
-                'value' => 'pending'
-            )
-        )
-    ));
-    
-    echo '<h2>Réservations en attente (' . count($pending_bookings) . ')</h2>';
-    foreach ($pending_bookings as $booking) {
-        $meta = get_post_meta($booking->ID);
-        echo '<div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">';
-        echo '<h3>' . $booking->post_title . '</h3>';
-        echo '<p>Date: ' . $meta['booking_date'][0] . ' - ' . $meta['time_slot'][0] . '</p>';
-        echo '<p>Service: ' . $meta['service'][0] . '</p>';
-        echo '<p>Véhicule: ' . $meta['vehicle_brand'][0] . ' ' . $meta['vehicle_model'][0] . '</p>';
-        echo '<form method="post" style="display: inline;">';
-        echo '<input type="hidden" name="booking_id" value="' . $booking->ID . '">';
-        echo '<button type="submit" name="approve_booking" class="button-primary">Approuver</button>';
-        echo '</form>';
-        echo '</div>';
-    }
-    
-    // Afficher les devis en attente
-    $pending_quotes = get_posts(array(
-        'post_type' => 'quote',
-        'meta_query' => array(
-            array(
-                'key' => 'status',
-                'value' => 'pending'
-            )
-        )
-    ));
-    
-    echo '<h2>Devis en attente (' . count($pending_quotes) . ')</h2>';
-    foreach ($pending_quotes as $quote) {
-        $meta = get_post_meta($quote->ID);
-        echo '<div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">';
-        echo '<h3>' . $quote->post_title . '</h3>';
-        echo '<p>Services: ' . implode(', ', unserialize($meta['services'][0])) . '</p>';
-        echo '<p>Véhicule: ' . $meta['vehicle_brand'][0] . ' ' . $meta['vehicle_model'][0] . '</p>';
-        echo '<form method="post" style="display: inline;">';
-        echo '<input type="hidden" name="quote_id" value="' . $quote->ID . '">';
-        echo '<input type="number" name="amount" placeholder="Montant" step="0.01" required>';
-        echo '<button type="submit" name="send_quote" class="button-primary">Envoyer le devis</button>';
-        echo '</form>';
-        echo '</div>';
-    }
-    
-    echo '</div>';
-}
-
-?>
+add_action('phpmailer_init', 'myjantes_smtp_config');

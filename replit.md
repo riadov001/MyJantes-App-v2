@@ -2,9 +2,14 @@
 
 This is a French automotive services application called "MY JANTES" that specializes in aluminum wheel renovation and customization services. The application provides a complete business management system for wheel restoration services including online booking, quote requests, customer management, and service administration. It features a modern responsive web interface with PWA capabilities for mobile users.
 
+**Latest Update (15 août 2025):** Application enhanced with authentic My Jantes branding, professional typography using Roboto/Roboto Condensed fonts, complete legal compliance pages for Google validation, and a comprehensive Flutter migration script for native mobile development. Ready for WordPress backend integration on Hostinger.
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+Typography: Roboto font family with Roboto Condensed for headings matching official branding.
+Design: Professional aesthetic matching myjantes.fr with authentic logo integration.
+Legal Compliance: Complete RGPD-compliant pages for Google Play/App Store validation.
 
 # System Architecture
 

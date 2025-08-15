@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-brand-black">
+            <CardTitle className="text-3xl font-heading font-bold text-brand-black tracking-tight">
               Politique de Confidentialité
             </CardTitle>
           </CardHeader>

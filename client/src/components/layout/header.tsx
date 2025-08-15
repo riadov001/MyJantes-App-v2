@@ -15,6 +15,7 @@ export default function Header() {
     { name: "Services", href: "/#services", icon: null },
     { name: "Réservation", href: "/booking", icon: Calendar },
     { name: "Devis", href: "/quote", icon: FileText },
+    { name: "Mentions Légales", href: "/mentions", icon: null },
   ];
 
   const handleNavClick = (href: string) => {
